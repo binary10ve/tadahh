@@ -1,0 +1,117 @@
+.left{ float:left;}
+.right{float:right;}
+.top-10{margin-top:10px;}
+.top-20{margin-top:20px;}
+.bottom-10{ margin-bottom:10px;}
+.bottom-20{ margin-bottom:20px;}
+.left-10{margin-left : 10px;}
+.left-20{margin-right :20px;}
+.right-10{margin-right : 10px;}
+.right-20{ margin-right : 20px;}
+.clear-float{clear:both;height:0;width:0;}
+.main{ width:950px; align:center;
+margin: 20px auto 0px auto;}
+#timeline{ height: 120px; display:block;}
+#content{min-height:400px;}
+/*div{ border:1px solid red;}*/
+header{
+ height: 215px;
+ display: block;
+}
+.todo-container{
+min-width : 250px;
+width : 260px;
+min-height: 400px;
+border : 1px solid grey;	
+}
+.todo-container .header{
+background-color: #333;
+color: white;
+padding: 4px;
+height: 20px;
+}
+
+
+.highlight{
+background-color: #F9EDBE;
+}
+
+#todo_list{
+height: 370px;
+}
+
+.dragger{
+	background: url(../images/task.png) repeat-y -254px 0px;
+	width:16px;
+	height:16px;
+	float:left;
+}
+
+.toggle{
+background: url(../images/task.png) no-repeat -16px -2px;
+width:16px;
+height:16px;
+margin-left:10px
+}
+[contenteditable]
+{
+width: 210px;
+margin-left: 2px;
+display:block;
+float: left;
+-webkit-user-modify: read-write;
+word-wrap: break-word;
+-webkit-nbsp-mode: space;
+-webkit-line-break: after-white-space;
+font-size: 10pt;
+line-height: 15px;
+padding: 2px 2px 0 0;
+text-align: left;
+}
+div.editable:focus{
+outline: none;
+}
+.todo-container li{
+xbackground-color: #F9EDBE;
+min-height :16px;
+height: auto;
+padding: 2px;
+list-style : none;
+}
+
+.todo-container ul li:focus{
+background-color: #F9EDBE;
+}
+
+.minimize, .maximize, .cross{
+float:left;
+}
+
+.todo-container  .minimize{
+background: url(../images/download.png) no-repeat -20px -80px;
+width:16px;height:16px;
+}
+
+.todo-container  .maximize{
+background: url(../images/download.png) no-repeat -120px -80px;
+width:16px;height:16px;
+}
+.todo-container  .cross{
+background: url(../images/download.png) no-repeat -40px -80px;
+width:16px;height:16px;
+}
+
+.todo-container .marker{
+display:block;
+float: left;
+}
+.todo-container .details{
+background: url(../images/task.png) repeat-y -94px 0px;
+float:left;
+width: 16px;
+height:16px;
+}
+footer {
+height : 50px;
+display : block;
+}

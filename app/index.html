@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Title</title>		
+		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/todo.js"></script>
+	</head>
+	<body>
+		<div class="main">
+			<header>
+				<div class="top-navigation">
+					<div class="left">
+					 im on left
+					</div>
+					<div class="right">
+					im on right
+					</div>
+					
+				</div>
+				<div class="clear-float">
+					</div>
+				<div id="timeline">
+					timeline
+				</div>
+			</header>
+			<div id="content">
+				<div class="left-content left">
+					left main content
+				</div>
+				<div class="right-content right">
+				<div id="todo-container" style="display:none" class="todo-container">
+					<div class="header">
+						<div class="left">Tasks</div>
+						<div class="right">
+							<div class="minimize"></div>
+							<div class="maximize" ></div>
+							<div class="cross"></div>
+						</div>
+					</div>
+					<div class="list_container">
+					<ul>
+							<li>
+							<div>
+								<div class="marker">
+									<div class="dragger"></div>
+									<div class="toggle" ></div>
+								</div>
+								<div contenteditable=true class="editable"></div>
+								<div class="details"></div>
+								<div class="clear-float">&nbsp;</div>
+							</div>
+						</li>
+						<li>
+							<div>
+								<div class="marker">
+									<div class="dragger"></div>
+									<div class="toggle" ></div>
+								</div>
+								<div contenteditable=true class="editable"></div>
+								<div class="details" ></div>
+								<div class="clear-float">&nbsp;</div>
+							</div>
+						</li>
+					</ul>
+					</div>
+				</div>
+					<div id="todo-cont1" class="todo-container"></div>
+					right widget area
+				</div>
+			</div>
+			<footer>
+			footer
+			</footer>
+		</div>
+	</body>
+</html>

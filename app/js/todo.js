@@ -128,14 +128,15 @@ TodoTemplate = {
 	
 }
 
-Todo = function(){
+Todo = function(attributes){
     var defaultValues = {		
-		this.title= ""
-		this.id = generateUUID();
-		this.description = "";
+		title= "",
+		id = generateUUID(),
+		description = ""
 	}
 	
-
+	attributes = $.extend({}, defaultValues, (attributes || {}))
+	this.buildAttributes(attributes);
 };
 
 Todo.prototype = {
@@ -148,6 +149,11 @@ Todo.prototype = {
 	},
 	destroy : function(){
 	
+	}
+	this.buildAttributes : function(attr){
+		for(var key in attr){
+		this[key] = attr[key];
+		}
 	}
 	
 };
