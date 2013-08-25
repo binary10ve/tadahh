@@ -103,36 +103,64 @@ var amplify = global.amplify = {
 
 
 
-(function($){
 
-
-function s4() {
-  return Math.floor((1 + Math.random()) * 0x10000)
-             .toString(16)
-             .substring(1);
-};
-
-function generateUUID() {
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-         s4() + '-' + s4() + s4() + s4();
+function Template( html, object_s ){
+	this.html = html,
+	this.object_s = object_s,
+	this.parser = function( obj ){
+		var html = this.html;
+		for( var i in obj ){
+		// Create a regex out of object key and replace it with their values
+			var reg = new RegExp( "\{" + i + "\}" , "g" );
+			var html = html.replace( reg, obj[i] );
+		}
+		return html;
+	},
+	this.collection = function(){
+		var output = [];
+		for( var i = 0, l = this.object_s.length; i < l ;i++ ){
+			output.push( this.parser(this.object_s[i]) );
+		}
+		return output.join( "" );
+	},
+	this.locals = function(){
+		return this.parser( this.object_s );
+	},
+	this.render = function(){
+	// This is Nasty
+	 return ( this.object_s instanceof Array ) ? this.collection() : this.locals();
+	}	
 }
 
-TodoTemplate = {
-	list = ["<ul></ul>"],
-	header = ["<div>{heading}</div>"].join(),
-	footer = ["<div>{footer}</div>"].join(),
-	todo = ["<li>",
-			"<span>","<input name=\"todo\" id={id} type=\"checkbox\"/>","</span>",
-			"<div contenteditable=true></div>",
-			"</li>"].join(),
+var todoUtility = {
+
+	s4 :  function(){
+		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+	},
+	generateUUID : function(){
+		  return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' +
+         this.s4() + '-' + this.s4() + this.s4() + this.s4();
+	},
 	
+	template : {
+		list : "<ul></ul>",
+		header  : "<div>{header}</div>",
+		footer : "<div>{footer}</div>",
+		todo : ["<li>",
+				"<span>","<input name=\"todo\" id={id} type=\"checkbox\"/>","</span>",
+				"<div contenteditable=true></div>",
+				"</li>"].join()
+	}
+	
+
 }
+
 
 Todo = function(attributes){
     var defaultValues = {		
-		title= "",
-		id = generateUUID(),
-		description = ""
+		title : "",
+		id  : generateUUID(),
+		description  : ""
 	}
 	
 	attributes = $.extend({}, defaultValues, (attributes || {}))
@@ -149,8 +177,8 @@ Todo.prototype = {
 	},
 	destroy : function(){
 	
-	}
-	this.buildAttributes : function(attr){
+	},
+	buildAttributes : function(attr){
 		for(var key in attr){
 		this[key] = attr[key];
 		}
@@ -162,8 +190,9 @@ Todo.prototype = {
 TodoCollection = [];
 
 
-TodoApp = function($ele){
+TodoApp = function($ele,options){
 		this.container = $ele;
+		this.options = options;
 		this.init();
 };
 
@@ -177,13 +206,13 @@ TodoApp.prototype = {
 		
 	},
 	
-	fetchTodos = function(){
-		var storedList = this.container.data("todoList");
-		if( storedList === undefined){
-			this.todos = new TodoCollection();
-		}else{
-			this.todos = storedList;
-		}
+	fetchTodos : function(){
+		// var storedList = this.container.data("todoList");
+		// if( storedList === undefined){
+			// this.todos = new TodoCollection();
+		// }else{
+			// this.todos = storedList;
+		// }
 	},
 	
 	draw : function(){
@@ -197,8 +226,24 @@ TodoApp.prototype = {
 	
 	},
 	
-	render : function(){
-	
+	render : function(what){
+		var inst = this;
+		switch(what)
+		{
+			case "header":
+				inst.container.html( new Template(todoUtility.template.header, inst.options.label ).render());
+			break;
+			case "list":
+				inst.container.append( new Template(todoUtility.template.list, inst.options.label ).render());
+			break;
+			case "footer":
+			inst.container.append( new Template(todoUtility.template.footer, inst.options.label ).render()); 
+							
+			break;
+			default:
+			
+		}
+		
 	}
 	
 	
@@ -210,14 +255,14 @@ TodoApp.prototype = {
 
     $.fn.todoApp = function(options) {
         
-        if (this.data('todoApp') != "undefined") {
+        if (this.data('todoApp') !== undefined) {
             return this.data('todoApp');
         } else if ($.type(options)  ==  'string') {
             var todoApp = this.data('todoApp');
             if (todoApp) todoApp[options]();
             return this;
-        }else if ($.type(options)  == "object"){
-			options = $.extend({}, $.fn.todoApp.defaults, options);
+        }else if ($.type(options)  == "object"  || options == undefined ){		
+			options = $.extend({}, $.fn.todoApp.defaults, (options || {}));
 			var app = new TodoApp(this, options);
 			$.data(this, 'todoApp', app);
 		} 
@@ -228,12 +273,11 @@ TodoApp.prototype = {
 
 
 $.fn.todoApp.defaults = {
-
-
+	label: { header : "Heading 1", footer : "Footer"}
+	
 }
 
 
-})(jQuery)_
 
 
 /*
