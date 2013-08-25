@@ -105,43 +105,115 @@ var amplify = global.amplify = {
 
 (function($){
 
+
+function s4() {
+  return Math.floor((1 + Math.random()) * 0x10000)
+             .toString(16)
+             .substring(1);
+};
+
+function generateUUID() {
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+         s4() + '-' + s4() + s4() + s4();
+}
+
+TodoTemplate = {
+	list = ["<ul></ul>"],
+	header = ["<div>{heading}</div>"].join(),
+	footer = ["<div>{footer}</div>"].join(),
+	todo = ["<li>",
+			"<span>","<input name=\"todo\" id={id} type=\"checkbox\"/>","</span>",
+			"<div contenteditable=true></div>",
+			"</li>"].join(),
+	
+}
+
 Todo = function(){
+    var defaultValues = {		
+		this.title= ""
+		this.id = generateUUID();
+		this.description = "";
+	}
 	
+
+};
+
+Todo.prototype = {
+
+	create : function(){
 	
+	},
+	update : function(){
+	
+	},
+	destroy : function(){
+	
+	}
+	
+};
 
-}
 
-TodoCollection = function(){
-
-}
+TodoCollection = [];
 
 
 TodoApp = function($ele){
 		this.container = $ele;
 		this.init();
-}
+};
 
 
 TodoApp.prototype = {
 
+	init : function (){
+		this.fetchTodos();
+		this.draw();
+		this.bindHandlers();
+		
+	},
+	
+	fetchTodos = function(){
+		var storedList = this.container.data("todoList");
+		if( storedList === undefined){
+			this.todos = new TodoCollection();
+		}else{
+			this.todos = storedList;
+		}
+	},
+	
+	draw : function(){
+		this.render("header");
+		this.render("list");
+		this.render("footer");
+		amplify.publish("viewIntialized");
+	},
+	
+	bindHandlers : function(){
+	
+	},
+	
+	render : function(){
+	
+	}
+	
+	
 
-}
+};
 
 
 
 
-    $.fn.todoList = function(options) {
+    $.fn.todoApp = function(options) {
         
-        if (this.data('todoList') != "undefined") {
-            return this.data('todoList');
+        if (this.data('todoApp') != "undefined") {
+            return this.data('todoApp');
         } else if ($.type(options)  ==  'string') {
-            var todoList = this.data('todoList');
-            if (todoList) todoList[options]();
+            var todoApp = this.data('todoApp');
+            if (todoApp) todoApp[options]();
             return this;
         }else if ($.type(options)  == "object"){
-			options = $.extend({}, $.fn.todoList.defaults, options);
+			options = $.extend({}, $.fn.todoApp.defaults, options);
 			var app = new TodoApp(this, options);
-			$.data(this, 'todoList', app);
+			$.data(this, 'todoApp', app);
 		} 
         
         return this;
@@ -149,7 +221,7 @@ TodoApp.prototype = {
     };
 
 
-$.fn.todoList.defaults = {
+$.fn.todoApp.defaults = {
 
 
 }
@@ -161,6 +233,7 @@ $.fn.todoList.defaults = {
 /*
 
 jQuery("#container").todoList({
+	labels : { header:"",footer: "" },
 	adapter : "localstorage"
 	namespace : "",
 	callbacks : {
