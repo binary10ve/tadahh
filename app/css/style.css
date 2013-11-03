@@ -20,6 +20,7 @@ header{
 }
 .todo-container{
 	min-width : 250px;
+	position: relative;
 	width : 260px;
 	min-height: 400px;
 	border : 1px solid grey;	
@@ -107,7 +108,9 @@ float:left;
 width: 16px;
 height:16px;
 }
-footer {
+.footer {
 height : 50px;
 display : block;
+position: absolute;
+bottom: 0px;
 }

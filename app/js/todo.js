@@ -39,13 +39,27 @@ var todoUtility = {
 	},
 	
 	template : {
-		list : "<ul id='todo-list-cont'></ul>",
-		header  : "<div id='todo-header'>{header}<div><span></span><span></span><span></span></div></div>",
-		footer : "<div id='todo-footer'>{footer}</div>",
-		todo : ["<li>",
-				"<span>","<input name=\"todo\" id={id} type=\"checkbox\"/>","</span>",
-				"<div contenteditable=true>{description}</div>",
-				"</li>"].join('')
+		container : "<div class='todo-container relative'></div>",
+		list : '<div class="list_container"><ul id="todo-list-cont"></ul>',
+		header  : ['<div class="header">',
+						'<div class="left">{header}</div>',
+						'<div class="right">',
+							'<div class="minimize"></div>',
+							'<div class="cross"></div>',
+						'</div>',
+					'</div>'].join(''),
+		footer : "<div id='todo-footer' class='footer'>{footer}</div>",
+		todo : ['<li>',
+					'<div>',
+						'<div class="marker">',
+							'<div class="dragger"></div>',
+							'<div class="toggle"></div>',
+						'</div>',
+						'<div contenteditable="true" class="editable">{description}</div>',
+						'<div class="details"></div>',
+						'<div class="clear-float">&nbsp;</div>',
+					'</div>',
+				'</li>'].join('')
 	}
 	
 
@@ -87,7 +101,7 @@ TodoCollection = [];
 
 
 TodoApp = function($ele,options){
-		this.container = $ele;
+		this.ele = $ele;
 		this.options = options;
 		this.init();
 };
@@ -107,6 +121,7 @@ TodoApp.prototype = {
 	},
 	
 	draw : function(){
+		this.render("container");
 		this.render("header");
 		this.render("list");
 		this.render("footer");
@@ -121,6 +136,11 @@ TodoApp.prototype = {
 		var inst = this;
 		switch(what)
 		{
+
+			case "container":
+				inst.ele.html( new Template(todoUtility.template.container).render());
+				inst.container = inst.ele.find(".todo-container");
+			break;
 			case "header":
 				inst.container.html( new Template(todoUtility.template.header, inst.options.label ).render());
 				inst.header = inst.container.find("#todo-header");

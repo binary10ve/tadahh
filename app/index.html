@@ -30,45 +30,10 @@
 				left main content
 			</div>
 			<div class="right-content right">
-				<div id="todo-container" class="todo-container">
-					<div class="header">
-						<div class="left">Tasks</div>
-						<div class="right">
-							<div class="minimize"></div>
-							<div class="cross"></div>
-						</div>
-					</div>
-					<div class="list_container">
-						<ul>
-							<li>
-								<div>
-									<div class="marker">
-										<div class="dragger"></div>
-										<div class="toggle" ></div>
-									</div>
-									<div contenteditable=true class="editable"></div>
-									<div class="details"></div>
-									<div class="clear-float">&nbsp;</div>
-								</div>
-							</li>
-							<li>
-								<div>
-									<div class="marker">
-										<div class="dragger"></div>
-										<div class="toggle" ></div>
-									</div>
-									<div contenteditable=true class="editable"></div>
-									<div class="details" ></div>
-									<div class="clear-float">&nbsp;</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-					<div id="todo-cont-1"></div>
-				</div>
-
+	
 
 				<!------>	
+				<div id="todo-container"></div>
 					<!------>
 					right widget area
 				</div>
@@ -77,5 +42,8 @@
 				footer
 			</footer>
 		</div>
+		<script type="text/javascript">
+			$("#todo-container").todoApp();
+		</script>
 	</body>
 	</html>
