@@ -54,6 +54,10 @@ width:16px;
 height:16px;
 margin-left:10px
 }
+
+.toggle.complete {
+	background: url(../css/images/task.png) no-repeat -31px -2px
+}
 [contenteditable]
 {
 width: 210px;

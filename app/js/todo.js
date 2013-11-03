@@ -1,5 +1,3 @@
-
-
 function Template( html, object_s ){
 	this.html = html,
 	this.object_s = object_s,
@@ -49,11 +47,11 @@ var todoUtility = {
 						'</div>',
 					'</div>'].join(''),
 		footer : "<div id='todo-footer' class='footer'>{footer}</div>",
-		todo : ['<li>',
+		todo : ['<li id="{id}">',
 					'<div>',
 						'<div class="marker">',
 							'<div class="dragger"></div>',
-							'<div class="toggle"></div>',
+							'<div class="toggle" data-id="{id}"></div>',
 						'</div>',
 						'<div contenteditable="true" class="editable">{description}</div>',
 						'<div class="details"></div>',
@@ -79,6 +77,10 @@ Todo = function(attributes){
 
 Todo.prototype = {
 
+	init : function(){
+		
+	},
+
 	create : function(){
 	
 	},
@@ -97,8 +99,6 @@ Todo.prototype = {
 };
 
 
-TodoCollection = [];
-
 
 TodoApp = function($ele,options){
 		this.ele = $ele;
@@ -112,12 +112,24 @@ TodoApp.prototype = {
 	init : function (){
 		this.fetchTodos();
 		this.draw();
+		this.setUpVariables();
 		this.bindHandlers();
 		
 	},
 	
 	fetchTodos : function(){
-		return [(new Todo({"id" : 345345, "description" : "ffffffffff"})),(new Todo({ "id" : 6445654, "description" : "666666666"})), (new Todo({description : ""}))];
+		this.todos = this.options.source || [(new Todo())]
+		return this.todos;
+	},
+
+	getTodo: function (id, callback) {
+		var inst = this;
+		$.each(this.todos, function (i, val) {
+			if (val.id === id) {
+				callback.apply(inst, arguments);
+				return false;
+			}
+		});
 	},
 	
 	draw : function(){
@@ -127,32 +139,78 @@ TodoApp.prototype = {
 		this.render("footer");
 		this.render("todos");
 	},
-	
+
+	setUpVariables : function(){
+		this.header = this.container.find("#todo-header");
+		this.toggler = this.container.find(".toggle");
+		this.footer = this.container.find("#todo-footer");	
+		this.editables = this.container.find("div[contenteditable]");
+	},
+
 	bindHandlers : function(){
+		var inst = this;
+		this.toggler.click(function(event) {
+			inst.markAsComplete($(this), $(this).hasClass('complete'));
+		});
+		this.container.on('keypress', 'div[contenteditable]',function(e){
+			if(e.which === 13){
+				inst.handleEnterKey(e);	
+			}
+			if(e.which === 8){
+				inst.handleBackSpace(e);
+			}
 	
+		});
+	},
+
+
+	markAsComplete : function($ele, flag){
+		this.getTodo($ele.attr("data-id"), function(i, item){
+			item.completed = !flag;
+		})
+		$ele.toggleClass('complete',!flag);
+	},
+
+	handleBackSpace : function(e){
+		var val = $.trim($(e.target).html());
+		if(val == ""){
+				console.log('delet this')
+		}
+	},
+
+	handleEnterKey : function(e){
+			var val = $.trim($(e.target).html());
+			if(val != ""){
+				this.addNewTodo($(e.target));
+			}
+           e.preventDefault();
+	},
+
+	addNewTodo : function(editable){
+		var parent = editable.parents("li");
+		var todo = new Template(todoUtility.template.todo, (new Todo())).render();	
+		$(todo).insertAfter(parent);
+		parent.next().find("div[contenteditable]").focus();
 	},
 	
 	render : function(what){
 		var inst = this;
 		switch(what)
 		{
-
 			case "container":
-				inst.ele.html( new Template(todoUtility.template.container).render());
-				inst.container = inst.ele.find(".todo-container");
+				this.ele.html( new Template(todoUtility.template.container).render());
+				this.container = this.ele.find(".todo-container");
 			break;
 			case "header":
-				inst.container.html( new Template(todoUtility.template.header, inst.options.label ).render());
-				inst.header = inst.container.find("#todo-header");
+				this.container.html( new Template(todoUtility.template.header, this.options.label ).render());		
 			break;
 			case "list":
-				inst.container.append( new Template(todoUtility.template.list, inst.options.label ).render());
-				inst.listContainer = inst.container.find("#todo-list-cont");
+				this.container.append( new Template(todoUtility.template.list, this.options.label ).render());
 			break;
 			case "footer":
-			inst.container.append( new Template(todoUtility.template.footer, inst.options.label ).render()); 
-			inst.footer = inst.container.find("#todo-footer");
+				inst.container.append( new Template(todoUtility.template.footer, inst.options.label ).render());			
 			case "todos":
+			this.listContainer = this.container.find("#todo-list-cont");
 			inst.listContainer.html(new Template(todoUtility.template.todo, inst.fetchTodos()).render());
 							
 			break;
@@ -179,7 +237,7 @@ TodoApp.prototype = {
             return this;
         }else if ($.type(options)  == "object"  || options == undefined ){		
 			options = $.extend({}, $.fn.todoApp.defaults, (options || {}));
-			var app = new TodoApp(this, options);
+			app = new TodoApp(this, options);
 			$.data(this, 'todoApp', app);
 		} 
         
@@ -192,7 +250,10 @@ $.fn.todoApp.defaults = {
 	label: { header : "Heading 1", footer : "Footer"},
 	onCreate : $.noop,
 	onDelete : $.noop,
-	onUpdate : $.noop 
+	onUpdate : $.noop,
+	source : [{ id : "456456", description : "fdgfdg", completed : false},
+				{ id : "13343", description : "ccccccd", completed : true}
+				]
 	
 }
 
