@@ -1,107 +1,3 @@
-/*!
- * Amplify Core 1.1.0
- * 
- * Copyright 2011 appendTo LLC. (http://appendto.com/team)
- * Dual licensed under the MIT or GPL licenses.
- * http://appendto.com/open-source-licenses
- * 
- * http://amplifyjs.com
- */
-(function( global, undefined ) {
-
-var slice = [].slice,
-	subscriptions = {};
-
-var amplify = global.amplify = {
-	publish: function( topic ) {
-		var args = slice.call( arguments, 1 ),
-			topicSubscriptions,
-			subscription,
-			length,
-			i = 0,
-			ret;
-
-		if ( !subscriptions[ topic ] ) {
-			return true;
-		}
-
-		topicSubscriptions = subscriptions[ topic ].slice();
-		for ( length = topicSubscriptions.length; i < length; i++ ) {
-			subscription = topicSubscriptions[ i ];
-			ret = subscription.callback.apply( subscription.context, args );
-			if ( ret === false ) {
-				break;
-			}
-		}
-		return ret !== false;
-	},
-
-	subscribe: function( topic, context, callback, priority ) {
-		if ( arguments.length === 3 && typeof callback === "number" ) {
-			priority = callback;
-			callback = context;
-			context = null;
-		}
-		if ( arguments.length === 2 ) {
-			callback = context;
-			context = null;
-		}
-		priority = priority || 10;
-
-		var topicIndex = 0,
-			topics = topic.split( /\s/ ),
-			topicLength = topics.length,
-			added;
-		for ( ; topicIndex < topicLength; topicIndex++ ) {
-			topic = topics[ topicIndex ];
-			added = false;
-			if ( !subscriptions[ topic ] ) {
-				subscriptions[ topic ] = [];
-			}
-	
-			var i = subscriptions[ topic ].length - 1,
-				subscriptionInfo = {
-					callback: callback,
-					context: context,
-					priority: priority
-				};
-	
-			for ( ; i >= 0; i-- ) {
-				if ( subscriptions[ topic ][ i ].priority <= priority ) {
-					subscriptions[ topic ].splice( i + 1, 0, subscriptionInfo );
-					added = true;
-					break;
-				}
-			}
-
-			if ( !added ) {
-				subscriptions[ topic ].unshift( subscriptionInfo );
-			}
-		}
-
-		return callback;
-	},
-
-	unsubscribe: function( topic, callback ) {
-		if ( !subscriptions[ topic ] ) {
-			return;
-		}
-
-		var length = subscriptions[ topic ].length,
-			i = 0;
-
-		for ( ; i < length; i++ ) {
-			if ( subscriptions[ topic ][ i ].callback === callback ) {
-				subscriptions[ topic ].splice( i, 1 );
-				break;
-			}
-		}
-	}
-};
-
-}( this ) );
-
-
 
 
 function Template( html, object_s ){
@@ -143,13 +39,13 @@ var todoUtility = {
 	},
 	
 	template : {
-		list : "<ul></ul>",
-		header  : "<div>{header}</div>",
-		footer : "<div>{footer}</div>",
+		list : "<ul id='todo-list-cont'></ul>",
+		header  : "<div id='todo-header'>{header}<div><span></span><span></span><span></span></div></div>",
+		footer : "<div id='todo-footer'>{footer}</div>",
 		todo : ["<li>",
 				"<span>","<input name=\"todo\" id={id} type=\"checkbox\"/>","</span>",
-				"<div contenteditable=true></div>",
-				"</li>"].join()
+				"<div contenteditable=true>{description}</div>",
+				"</li>"].join('')
 	}
 	
 
@@ -159,7 +55,7 @@ var todoUtility = {
 Todo = function(attributes){
     var defaultValues = {		
 		title : "",
-		id  : generateUUID(),
+		id  : todoUtility.generateUUID(),
 		description  : ""
 	}
 	
@@ -207,19 +103,14 @@ TodoApp.prototype = {
 	},
 	
 	fetchTodos : function(){
-		// var storedList = this.container.data("todoList");
-		// if( storedList === undefined){
-			// this.todos = new TodoCollection();
-		// }else{
-			// this.todos = storedList;
-		// }
+		return [(new Todo({"id" : 345345, "description" : "ffffffffff"})),(new Todo({ "id" : 6445654, "description" : "666666666"})), (new Todo({description : ""}))];
 	},
 	
 	draw : function(){
 		this.render("header");
 		this.render("list");
 		this.render("footer");
-		amplify.publish("viewIntialized");
+		this.render("todos");
 	},
 	
 	bindHandlers : function(){
@@ -232,12 +123,17 @@ TodoApp.prototype = {
 		{
 			case "header":
 				inst.container.html( new Template(todoUtility.template.header, inst.options.label ).render());
+				inst.header = inst.container.find("#todo-header");
 			break;
 			case "list":
 				inst.container.append( new Template(todoUtility.template.list, inst.options.label ).render());
+				inst.listContainer = inst.container.find("#todo-list-cont");
 			break;
 			case "footer":
 			inst.container.append( new Template(todoUtility.template.footer, inst.options.label ).render()); 
+			inst.footer = inst.container.find("#todo-footer");
+			case "todos":
+			inst.listContainer.html(new Template(todoUtility.template.todo, inst.fetchTodos()).render());
 							
 			break;
 			default:
@@ -273,7 +169,10 @@ TodoApp.prototype = {
 
 
 $.fn.todoApp.defaults = {
-	label: { header : "Heading 1", footer : "Footer"}
+	label: { header : "Heading 1", footer : "Footer"},
+	onCreate : $.noop,
+	onDelete : $.noop,
+	onUpdate : $.noop 
 	
 }
 
